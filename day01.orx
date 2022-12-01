@@ -1,0 +1,24 @@
+/* Advent of code 2022, day 1, part 1+2 in Open Object REXX */
+
+input = .stream~new('day01.txt')~arrayIn
+calories = .list~new
+sum = 0
+do line over input
+    if line \= '' then sum += line
+    else do
+        calories~append(sum)
+        sum = 0
+    end
+end
+calories~append(sum)
+calories~sortWith(.InvertingComparator~new(.NumericComparator~new))
+
+part_1:
+say calories~firstItem
+
+part_2:
+sum = 0
+do item over calories~section(calories~first, 3)
+    sum += item
+end
+say sum
