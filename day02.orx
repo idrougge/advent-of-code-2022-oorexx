@@ -1,0 +1,37 @@
+/* Advent of code 2022, day 2, part 1+2 in Open Object REXX */
+
+input = .stream~new('day02.txt')
+total1 = 0
+total2 = 0
+do line over input
+    parse var line he me
+    total1 += part_1(he, me~translate(abc, xyz))
+    total2 += part_2(he, me)
+end
+say total1
+say total2
+exit
+
+part_2:
+select case me
+    when x then hand = he~translate(cab, abc)
+    when y then hand = he
+    when z then hand = he~translate(bca, abc)
+end
+return part_1(he, hand)
+
+part_1: procedure
+arg he, me
+points = me~translate(123, abc)
+score = (outcome(he, me) + 1) * 3
+return score + points
+
+outcome: procedure
+arg he, me
+--return (he < me) - (he > me)
+select
+    when he = me then return 0
+    when he = a & me = c then return -1
+    when he = c & me = a then return +1
+    otherwise return (he < me) - (he > me)
+end
