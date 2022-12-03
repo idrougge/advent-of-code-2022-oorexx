@@ -1,0 +1,29 @@
+/* Advent of code 2022, day 3, part 1+2 in Open Object REXX */
+
+input = .stream~new('day03.txt')
+sum1 = 0; sum2 = 0
+do while input~lines > 0
+    do i = 1 to 3
+        line = input~linein
+        sum1 += part_1(line)
+        lines.i = line~makeArray('')
+    end
+    sum2 += part_2(lines.)
+end
+say sum1
+say sum2
+exit
+
+part_2: procedure 
+use arg lines.
+lines.1 = lines.1~intersection(lines.2)
+lines.1 = lines.1~intersection(lines.3)
+return points(lines.1)
+
+part_1: procedure
+use arg line
+parse var line a +(line~length / 2) b
+pos = a~verify(b, MATCH)
+return points(a[pos])
+
+points: return (.string~lower || .string~upper)~verify(arg(1), MATCH)
