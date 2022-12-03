@@ -28,7 +28,6 @@ return score + points
 
 outcome: procedure
 arg he, me
---return (he < me) - (he > me)
 select
     when he = me then return 0
     when he = a & me = c then return -1
