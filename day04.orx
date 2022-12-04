@@ -1,0 +1,16 @@
+/* Advent of code 2022, day 4, part 1+2 in Open Object REXX */
+
+input = .stream~new('day04.txt')
+sum1 = 0; sum2 = 0
+do while input~lines > 0
+    parse value input~linein with llo '-' lhi ',' rlo '-' rhi
+    
+    if llo <= rlo & lhi >= rhi then sum1 += 1
+    else if llo >= rlo & lhi <= rhi then sum1 += 1
+
+    if llo >= rlo & llo <= rhi then sum2 += 1
+    else if rlo >= llo & rlo <= lhi then sum2 += 1
+end
+say sum1
+say sum2
+
