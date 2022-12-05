@@ -1,0 +1,58 @@
+/* Advent of code 2022, day 5, part 1+2 in Open Object REXX */
+
+input = .stream~new('day05.txt')~arrayIn
+do p = 1 to 2
+    call parseInput
+    call(part_ || p)
+    call print stacks.
+end
+exit
+
+parseInput:
+loop with index j item line over input while line~contains('[')
+    loop i = 1 while line~length > 0
+        parse var line +1 letter +1 . +2 line
+        if j = 1 then stacks.i = .queue~new
+        if letter = ' ' then iterate
+        stacks.i~queue(letter)
+    end
+end
+loop i = j + 2 to input~items
+    parse value input[i] with 'move ' quantity 'from ' source 'to' destination .
+    queue quantity source destination
+end
+return
+
+part_2:
+do queued()
+    pull quantity source destination .
+    temp = .queue~new
+    do quantity
+        crate = stacks.source~pull
+        temp~push(crate)
+    end
+    do quantity
+        crate = temp~pull
+        stacks.destination~push(crate)
+    end
+end
+return
+
+part_1:
+do queued()
+    pull quantity source destination .
+    do quantity
+        crate = stacks.source~pull
+        stacks.destination~push(crate)
+    end
+end
+return
+
+print: procedure
+use arg stacks.
+result = ''
+do i = 1 to stacks.~items
+    result ||= stacks.i~peek
+end
+say result
+return
