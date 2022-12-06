@@ -1,0 +1,15 @@
+/* Advent of code 2022, day 6, part 1+2 in Open Object REXX */
+
+input = .stream~new('day06.txt')~lineIn
+say solve(input, 4)
+say solve(input, 14)
+exit
+
+solve: procedure
+use strict arg input, chunk
+do i = chunk while input~length >= 4
+    parse var input letters +(chunk) -(chunk-1) input
+    set = .set~new~~putAll(letters~makeArray(''))
+    if set~items = chunk then leave
+end
+return i
