@@ -1,0 +1,36 @@
+/* Advent of code 2022, day 7, part 1+2 in Open Object REXX */
+
+input = .stream~new('day07.txt')
+input~lineIn -- Skip first line
+total = traverse()
+sum1 = 0; sum2 = total
+disksize = 70000000
+required = 30000000
+available = disksize - total
+free = required - available
+do queued()
+    pull size
+    if size < 100000 then sum1 += size
+    if size > free then sum2 = min(size, sum2)
+end
+say sum1
+say sum2
+exit
+
+traverse: procedure expose input
+if input~lineIn \= '$ ls' then raise halt description 'ls expected'
+sum = 0
+do while input~lines > 0
+    parse value input~linein with first second
+    select
+        when first = 'dir' then nop
+        when second = 'cd ..' then leave
+        when second~word(1) = 'cd' then do
+            subsize = traverse()
+            push subsize
+            sum += subsize
+        end
+        otherwise sum += first
+    end
+end
+return sum
