@@ -1,0 +1,47 @@
+/* Advent of code 2022, day 8, part 1+2 in Open Object REXX */
+
+dirs.1.1 = -1
+dirs.1.2 = -1
+dirs.2.1 = +1
+dirs.2.2 = -1
+dirs.3.1 = +1
+dirs.3.2 = +1
+dirs.4.1 = -1
+dirs.4.2 = +1
+input = .stream~new('day08.txt')
+length = input~lines
+trees = .array~new(length, length)
+seen = .array~new(length, length)
+loop with index row item line over input
+    --say row line
+    line = line~makeArray('')
+    loop with index column item tree over line
+        --say column row tree
+        trees[column, row] = tree
+    end
+end
+do x = 1 to trees~dimension(1)
+    d = 0
+    do y = 2 to trees~dimension(2)
+        say x y '=' trees[x,y]
+        if trees[x, y - 1] > trees[x, y] then do
+            say 'djup' x','y':' d
+            leave y
+        end
+        d += 1
+    end
+end
+exit
+loop with index i over trees
+    say i~toString(, ',')
+    do cardinality = 1 to 4
+        say cardinality
+    end
+end
+say '----'
+--seen = ((1,2), (3,4))
+say seen
+say seen~hasIndex((3,4))
+item = (3,4)
+--seen[item] = .true
+say seen~hasIndex((3,4))
