@@ -12,6 +12,7 @@ input = .stream~new('day08.txt')
 length = input~lines
 trees = .array~new(length, length)
 seen = .array~new(length, length)
+visible = .array~new(length, length)
 loop with index row item line over input
     --say row line
     line = line~makeArray('')
@@ -20,28 +21,114 @@ loop with index row item line over input
         trees[column, row] = tree
     end
 end
+--call part_2 3, 4
+best = 0
+loop with index ix over trees
+    score = part_2(ix[1], ix[2])
+    best = max(score, best)
+end
+say best
+exit
+part_2:
+use strict arg orig_x, orig_y
+here = trees[orig_x, orig_y]
+say 'Origin:' orig_x','orig_y here
+product = scan_h(orig_x, orig_y, +1, trees~dimension(1)),
+* scan_h(orig_x, orig_y, -1, 1),
+*scan_v(orig_x, orig_y, +1, trees~dimension(2)),
+*scan_v(orig_x, orig_y, -1, 1)
+say 'Produkt:' product
+return product
+
+scan_h: procedure expose trees
+use strict arg orig_x, orig_y, dx, stop
+say 'scan_h' orig_x orig_y dx stop
+here = trees[orig_x, orig_y]
+distance = 0
+do x = orig_x + dx to stop by dx until tree >= here
+    tree = trees[x, orig_y]
+    say x','orig_y tree
+    distance += 1
+end
+say 'distance:' distance
+return distance
+
+scan_v: procedure expose trees
+use strict arg orig_x, orig_y, dy, stop
+say 'scan_v' orig_x orig_y dy stop
+here = trees[orig_x, orig_y]
+distance = 0
+do y = orig_y + dy to stop by dy until tree >= here
+    tree = trees[orig_x, y]
+    say orig_x','y tree
+    distance += 1
+end
+say 'distance:' distance
+return distance
+
+part_1:
+say '---- uppifrån'
 do x = 1 to trees~dimension(1)
     d = 0
-    do y = 2 to trees~dimension(2)
+    top = -1
+    do y = 1 to trees~dimension(2)
         say x y '=' trees[x,y]
-        if trees[x, y - 1] > trees[x, y] then do
+        if trees[x, y] > top then do
+            top = trees[x, y]
             say 'djup' x','y':' d
-            leave y
+            visible[x, y] = .true
         end
         d += 1
     end
 end
-exit
-loop with index i over trees
-    say i~toString(, ',')
-    do cardinality = 1 to 4
-        say cardinality
+say '---- nedifrån'
+do x = 1 to trees~dimension(1)
+    d = 0
+    top = -1
+    do y = trees~dimension(2) to 1 by -1
+        say x y '=' trees[x,y]
+        if trees[x, y] > top then do
+            top = trees[x, y]
+            say 'djup' x','y':' d
+            visible[x, y] = .true
+        end
+        d += 1
     end
 end
-say '----'
---seen = ((1,2), (3,4))
-say seen
-say seen~hasIndex((3,4))
-item = (3,4)
---seen[item] = .true
-say seen~hasIndex((3,4))
+say '---- vänsterifrån'
+do y = 1 to trees~dimension(2)
+    d = 0
+    top = -1
+    do x = 1 to trees~dimension(1)
+        say x y '=' trees[x,y]
+        if trees[x, y] > top then do
+            top = trees[x, y]
+            say 'djup' x','y':' d
+            visible[x, y] = .true
+        end
+        d += 1
+    end
+end
+say '---- högerifrån'
+do y = 1 to trees~dimension(2)
+    d = 0
+    top = -1 --trees[x, y]
+    do x = trees~dimension(2) to 1 by -1
+        say x y '=' trees[x,y]
+        if trees[x, y] > top then do
+            top = trees[x, y]
+            say 'djup' x','y':' d
+            visible[x, y] = .true
+        end
+        d += 1
+    end
+end
+say '---- summering'
+sum = 0
+loop with index ix over visible
+    say ix~toString(,',')
+    sum += 1
+end
+say 'summa:' sum
+
+exit
