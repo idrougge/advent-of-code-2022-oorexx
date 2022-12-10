@@ -1,0 +1,36 @@
+/* Advent of code 2022, day 10, part 1+2 in Open Object REXX */
+
+input = .stream~new('day10.txt')
+x = 1
+cycles_total = 0
+screen = ''
+loop line over input
+    parse var line op args
+    select case op
+        when 'noop' then cycles = 1
+        when 'addx' then cycles = 2
+    end
+    do cycles
+        hpos = cycles_total // 40
+        cycles_total += 1
+        if abs(hpos - x) < 2 then screen ||= '#'
+        else screen ||= ' '
+        if (cycles_total + 20) // 40 = 0 then push x * cycles_total
+    end
+    select case op
+        when 'noop' then nop
+        when 'addx' then x += args
+    end
+end
+
+-- part 1:
+sum = 0
+do queued()
+    pull x
+    sum += x
+end
+say sum
+-- part 2:
+do i = 1 to 40 * 6 by 40
+    say screen~substr(i, 40)
+end
