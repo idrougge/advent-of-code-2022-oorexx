@@ -1,0 +1,91 @@
+/* Advent of code 2022, day 12, part 1+2 in Open Object REXX */
+input = .stream~new('day12.txt')
+height = input~lines
+width = input~linein~length
+map = .array~new(width, height)
+visited = map~copy
+input~seek('=1')
+loop with index row item line over input
+    say row line
+    loop with index column item cell over line~makeArray('')
+        --say column row cell
+        map[column, row] = cell
+        if cell = 'S' then start = (column, row)
+    end
+end
+
+deltas. = 0
+deltas.1.2 = -1
+deltas.2.2 = +1
+deltas.3.1 = -1
+deltas.4.1 = +1
+
+visited[start] = .true
+--visited~define('HEJ', 'say "Hej"')
+--visited~setMethod('HEJ', 'say "Hej"')
+--visited~hej
+meths = .directory~new
+meths['HEJ'] = 'say "Hej"'
+say .list~id
+lll = .class~enhanced(meths, 'List')
+lll~hej
+say lll
+--lll~new~hej
+mmm = .list~subclass('Min lista')
+mmm~define('HEJ', 'say "Hej"')
+mmm~define('HASITEM', 'say "Hej"')
+say mmm
+minsublista = mmm~new
+say minsublista
+minsublista~hej
+minsublista~append((1,2))
+say minsublista~allItems[1]~toString(,',')
+--say 'hasItem' minsublista~hasItem((1,2))
+minlista = .list~new
+--minlista~setMethod('HEJ', 'say "Hej"')
+--exit
+call traverse start, .list~of(start[1] start[2])
+call render map
+call render visited
+exit
+
+traverse: procedure expose map visited deltas.
+use strict arg start, steps
+if map[start] = 'E' then say 'Nådde E.'
+if map[start] = 'E' then exit
+say 'Står på' start[1] start[2] '=' map[start]
+say 'djup:' steps~items
+loop i = 1 to 4
+    x = start[1]; y = start[2]
+    dx = deltas.i.1; dy = deltas.i.2
+    x += dx; y += dy
+    say '>' x y
+    if x < 1 | y < 1 then iterate
+    if x > map~dimension(1) then iterate
+    if y > map~dimension(2) then iterate
+    --if visited~hasIndex((x,y)) then say x','y 'har redan besökts.'
+    --if visited~hasIndex((x,y)) then iterate
+    if steps~hasItem((x y)) then say x','y 'har redan besökts.'
+    if steps~hasItem((x y)) then iterate
+    say 'OK' map[(x,y)]
+    if map[(x,y)] = 'E' then return --exit
+    delta = map[(x,y)]~c2d - map[start]~c2d
+    if map[start] = 'S' then delta = 0
+    say 'delta' delta
+    visited[(x,y)] = .true
+    if delta <= 1 then call traverse (x,y), steps~copy~~append((x y))
+end
+return
+
+render: procedure
+use strict arg map
+loop y = 1 to map~dimension(2)
+    line = ''
+    loop x = 1 to map~dimension(1)
+        line ||= map[(x,y)]
+    end
+    say line
+end
+return
+
+::method deepCompare
