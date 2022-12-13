@@ -21,61 +21,44 @@ deltas.3.1 = -1
 deltas.4.1 = +1
 
 visited[start] = .true
---visited~define('HEJ', 'say "Hej"')
---visited~setMethod('HEJ', 'say "Hej"')
---visited~hej
-meths = .directory~new
-meths['HEJ'] = 'say "Hej"'
-say .list~id
-lll = .class~enhanced(meths, 'List')
-lll~hej
-say lll
---lll~new~hej
-mmm = .list~subclass('Min lista')
-mmm~define('HEJ', 'say "Hej"')
-mmm~define('HASITEM', 'say "Hej"')
-say mmm
-minsublista = mmm~new
-say minsublista
-minsublista~hej
-minsublista~append((1,2))
-say minsublista~allItems[1]~toString(,',')
---say 'hasItem' minsublista~hasItem((1,2))
-minlista = .list~new
---minlista~setMethod('HEJ', 'say "Hej"')
---exit
-call traverse start, .list~of(start[1] start[2])
+
+shortest = traverse(start, .set~of(start[1] start[2]), map~items)
+say shortest
+exit
 call render map
 call render visited
 exit
 
 traverse: procedure expose map visited deltas.
-use strict arg start, steps
-if map[start] = 'E' then say 'Nådde E.'
-if map[start] = 'E' then exit
-say 'Står på' start[1] start[2] '=' map[start]
-say 'djup:' steps~items
+use strict arg start, steps, shortest_yet
+--if map[start] = 'E' then say 'Nådde E.'
+--if map[start] = 'E' then exit
+--say 'Står på' map[start] '('start[1]','start[2]')'
+--say 'djup:' steps~items
+if map[start] = 'z' then do
+    --steps~append(x y)
+    call plotpath steps
+    return steps~items --exit
+end
 loop i = 1 to 4
     x = start[1]; y = start[2]
     dx = deltas.i.1; dy = deltas.i.2
     x += dx; y += dy
-    say '>' x y
+    --say '>' x y
     if x < 1 | y < 1 then iterate
     if x > map~dimension(1) then iterate
     if y > map~dimension(2) then iterate
-    --if visited~hasIndex((x,y)) then say x','y 'har redan besökts.'
-    --if visited~hasIndex((x,y)) then iterate
-    if steps~hasItem((x y)) then say x','y 'har redan besökts.'
-    if steps~hasItem((x y)) then iterate
-    say 'OK' map[(x,y)]
-    if map[(x,y)] = 'E' then return --exit
-    delta = map[(x,y)]~c2d - map[start]~c2d
+    --if steps~hasItem(x y) then say x','y 'har redan besökts.'
+    if steps~hasItem(x y) then iterate
+    --say 'OK' map[x,y]
+    delta = map[x,y]~c2d - map[start]~c2d
     if map[start] = 'S' then delta = 0
-    say 'delta' delta
-    visited[(x,y)] = .true
-    if delta <= 1 then call traverse (x,y), steps~copy~~append((x y))
+    if map[x,y] = 'E' then iterate
+    --say 'delta' delta
+    --visited[(x,y)] = .true
+    if delta <= 1 then shortest_yet = min(shortest_yet, traverse((x,y), steps~copy~~put(x y), shortest_yet))
 end
-return
+return shortest_yet
 
 render: procedure
 use strict arg map
@@ -88,4 +71,25 @@ loop y = 1 to map~dimension(2)
 end
 return
 
+plotpath: procedure expose map
+use strict arg path
+newmap = map~copy
+loop y = 1 to map~dimension(2)
+    loop x = 1 to map~dimension(1)
+        newmap[(x,y)] = '.'
+    end
+end
+do with index i item step over path until i = path~items - 1
+    parse var step x y
+    next = path[i + 1]
+    parse var next nextx nexty
+    letter = 'X'
+    if nextx > x then letter = '>'
+    if nextx < x then letter = '<'
+    if nexty > y then letter = 'v'
+    if nexty < y then letter = '^'
+    newmap[x,y] = letter
+end
+call render newmap
+return
 ::method deepCompare
