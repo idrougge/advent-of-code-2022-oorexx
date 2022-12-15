@@ -1,0 +1,11 @@
+input = .stream~new('day15.txt')
+map = .directory~new
+loop line over input
+    say line
+    parse var line 'Sensor at x='sx', y='sy': closest beacon is at x='bx', y='by
+    dx = bx - sx
+    dy = by - sy
+    say sx sy '<>' bx by '∆' dx dy
+    map[sx sy] = (dx, dy)
+end
+exit
