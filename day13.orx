@@ -1,20 +1,39 @@
 input = .stream~new('day13.txt')
-loop 1 while input~lines > 0
+loop 2 while input~lines > 0
     left = input~linein
     right = input~linein
     say left
     say right
     say input~linein -- Skip blank line
 end
+say left
+--interpret('data=' '(1,2,3,(4,5))')
+left = left~changeStr('[', '(')~changeStr(']', ')')
+say left
+interpret('data='left)
+say data
+exit
 call compare left~makeArray(''), right~makeArray('')
 exit
 
 compare: procedure
 use strict arg left, right, lcur = 1, rcur = 1
 do while lcur < left~items
-    say lcur left[lcur]
-    if left[lcur] = '[' then do
-        if right[rcur] = '[' then call compare left, right, lcur + 1, rcur + 1
+    ltok = left[lcur]
+    rtok = right[rcur]
+    say lcur ltok '<>' rcur rtok
+    if ltok = '[' then do
+        if rtok = '[' then call compare left, right, lcur + 1, rcur + 1
+    end
+    else if ltok = ',' then do
+        if rtok = ',' then do
+            lcur += 1
+            rcur += 1
+        end
+        else raise halt
+    end
+    else if ltok~datatype = 'NUM' then do
+        nop
     end
     lcur += 1
 end
