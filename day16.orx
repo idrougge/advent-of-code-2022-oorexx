@@ -1,0 +1,49 @@
+input = .stream~new('day16.txt')
+map = .relation~new
+flow_rates = .table~new
+loop line over input
+    say line
+    parse var line 'Valve 'source' has flow rate='flow_rate';' . 'to' . destinations
+    say source flow_rate destinations
+    flow_rates[source] = flow_rate
+    destinations = destinations~makeArray(', ')
+    loop valve over destinations
+        map[source] = valve
+    end
+end
+say '--------------'
+--call traverse aa
+call distance aa, cc
+exit
+
+traverse: procedure expose map
+use strict arg source, visited = (.list~new), opened = (.list~new)
+say 'traverse' source
+say 'visited:' visited~allItems~makeString(,',')
+say 'opened:' opened~allItems~makeString(,',')
+destinations = map~allAt(source)
+say 'leads to' destinations~allItems~makeString(,',')
+--say map~allIndex(aa)
+--say visited~allItems
+--say visited~~append('öö')~allItems
+loop destination over destinations
+    if visited~hasItem(destination) then iterate
+    say '---------'
+    call traverse destination, visited~~append(source)
+end
+return
+
+distance: procedure expose map
+use strict arg source, final_destination, steps = (.list~new), visited = (.list~new)
+say source '->' final_destination
+say 'steps' steps~allItems~makeString(,'-')
+destinations = map~allAt(source)
+loop destination over destinations
+    if visited~hasItem(destination) then iterate
+    if destination = final_destination then do
+        say steps~allItems~~appendAll((source, destination))~makeString(,'->')
+        iterate
+    end
+    call distance destination, final_destination, steps~copy~~append(source), visited~~append(source)
+end
+return
